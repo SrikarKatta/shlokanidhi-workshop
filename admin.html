@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shloka Nidhi · Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0D0D0D;
+      --surface: #161616;
+      --surface2: #1E1E1E;
+      --border: #2A2A2A;
+      --gold: #F5C842;
+      --saffron: #E8820C;
+      --cream: #F0E6C8;
+      --muted: #888;
+      --green: #4CAF7D;
+      --red: #E05555;
+      --blue: #5B9BD5;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--cream); font-family:'IBM Plex Mono',monospace; min-height:100vh; }
+
+    /* ── Login Screen ── */
+    #loginScreen {
+      display:flex; align-items:center; justify-content:center;
+      min-height:100vh;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(232,130,12,0.15) 0%, transparent 60%);
+    }
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 360px;
+      text-align: center;
+    }
+    .login-box .icon { font-size: 40px; margin-bottom: 16px; }
+    .login-box h2 { font-family:'Cinzel',serif; font-size:20px; color:var(--gold); margin-bottom:6px; }
+    .login-box p { font-size:12px; color:var(--muted); margin-bottom:28px; letter-spacing:1px; }
+    .login-box input {
+      width:100%; padding:13px 16px;
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:8px; color:var(--cream);
+      font-family:'IBM Plex Mono',monospace; font-size:15px;
+      outline:none; margin-bottom:14px; letter-spacing:2px;
+      transition: border-color .2s;
+    }
+    .login-box input:focus { border-color:var(--gold); }
+    .login-box button {
+      width:100%; padding:13px;
+      background: linear-gradient(135deg, var(--saffron), #b34a00);
+      border:none; border-radius:8px;
+      color:#fff; font-family:'Cinzel',serif; font-size:15px;
+      font-weight:600; letter-spacing:2px; cursor:pointer;
+      transition: opacity .2s, transform .15s;
+    }
+    .login-box button:hover { opacity:.9; transform:translateY(-1px); }
+    .login-error { color:var(--red); font-size:12px; margin-top:10px; display:none; }
+
+    /* ── Dashboard ── */
+    #dashboard { display:none; }
+
+    /* Topbar */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex; align-items:center; justify-content:space-between;
+      position: sticky; top:0; z-index:100;
+    }
+    .topbar-left { display:flex; align-items:center; gap:14px; }
+    .topbar-logo { font-size:22px; }
+    .topbar-title { font-family:'Cinzel',serif; font-size:16px; color:var(--gold); }
+    .topbar-sub { font-size:11px; color:var(--muted); letter-spacing:2px; }
+    .logout-btn {
+      background:transparent; border:1px solid var(--border);
+      color:var(--muted); padding:7px 16px; border-radius:6px;
+      font-family:'IBM Plex Mono',monospace; font-size:12px;
+      cursor:pointer; transition:all .2s;
+    }
+    .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+    /* Main */
+    .main { padding: 32px; max-width: 1300px; margin: 0 auto; }
+
+    /* Stats row */
+    .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:32px; }
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:20px 22px;
+      transition: border-color .2s;
+    }
+    .stat-card:hover { border-color: rgba(245,200,66,0.3); }
+    .stat-card .s-label { font-size:10px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+    .stat-card .s-value { font-family:'Cinzel',serif; font-size:32px; font-weight:700; color:var(--gold); line-height:1; }
+    .stat-card .s-sub { font-size:11px; color:var(--muted); margin-top:5px; }
+
+    /* Controls */
+    .controls {
+      display:flex; align-items:center; gap:12px;
+      margin-bottom:20px; flex-wrap:wrap;
+    }
+    .search-box {
+      flex:1; min-width:200px;
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:8px; padding:10px 14px;
+      color:var(--cream); font-family:'IBM Plex Mono',monospace; font-size:13px;
+      outline:none; transition:border-color .2s;
+    }
+    .search-box:focus { border-color:var(--gold); }
+    .search-box::placeholder { color:var(--muted); }
+    .filter-select {
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:8px; padding:10px 14px;
+      color:var(--cream); font-family:'IBM Plex Mono',monospace; font-size:13px;
+      outline:none; cursor:pointer;
+    }
+    .filter-select option { background:var(--surface2); }
+    .export-btn {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:8px; padding:10px 18px;
+      color:var(--gold); font-family:'IBM Plex Mono',monospace; font-size:12px;
+      cursor:pointer; transition:all .2s; white-space:nowrap;
+      letter-spacing:1px;
+    }
+    .export-btn:hover { background:rgba(245,200,66,0.08); border-color:var(--gold); }
+    .refresh-btn {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:8px; padding:10px 14px;
+      color:var(--muted); font-size:16px; cursor:pointer;
+      transition:all .2s;
+    }
+    .refresh-btn:hover { color:var(--gold); border-color:var(--gold); }
+
+    /* Table */
+    .table-wrap {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; overflow:hidden;
+    }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead { background:var(--surface2); }
+    th {
+      padding:13px 16px; text-align:left;
+      font-size:9px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--muted); font-weight:400; border-bottom:1px solid var(--border);
+      white-space:nowrap;
+    }
+    td {
+      padding:14px 16px; border-bottom:1px solid var(--border);
+      color:var(--cream); vertical-align:middle;
+    }
+    tr:last-child td { border-bottom:none; }
+    tbody tr { transition:background .15s; }
+    tbody tr:hover { background:rgba(245,200,66,0.04); }
+
+    .badge-inr {
+      background:rgba(76,175,125,0.15); color:var(--green);
+      border:1px solid rgba(76,175,125,0.3);
+      border-radius:20px; padding:2px 10px; font-size:11px;
+    }
+    .badge-usd {
+      background:rgba(91,155,213,0.15); color:var(--blue);
+      border:1px solid rgba(91,155,213,0.3);
+      border-radius:20px; padding:2px 10px; font-size:11px;
+    }
+    .payment-id {
+      font-size:11px; color:var(--muted);
+      max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .date-cell { font-size:12px; color:var(--muted); white-space:nowrap; }
+
+    /* Empty / loading */
+    .table-status {
+      text-align:center; padding:60px 20px;
+      color:var(--muted); font-size:13px; letter-spacing:1px;
+    }
+    .table-status .icon { font-size:32px; margin-bottom:12px; }
+
+    /* Spinner */
+    .spin { display:inline-block; width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* Count badge */
+    .count-badge {
+      background:rgba(245,200,66,0.12); color:var(--gold);
+      border-radius:20px; padding:2px 10px;
+      font-size:11px; margin-left:8px;
+    }
+
+    /* Revenue highlight */
+    .revenue-inr { color:var(--green); font-family:'Cinzel',serif; }
+    .revenue-usd { color:var(--blue); font-family:'Cinzel',serif; }
+
+    @media(max-width:768px) {
+      .main { padding:16px; }
+      .topbar { padding:0 16px; }
+      td,th { padding:10px 12px; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Login Screen ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="icon">🕉️</div>
+    <h2>Admin Portal</h2>
+    <p>SHLOKA NIDHI · SECURE ACCESS</p>
+    <input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button onclick="doLogin()">Enter Dashboard</button>
+    <div class="login-error" id="loginErr">❌ Incorrect password</div>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-logo">🪷</span>
+      <div>
+        <div class="topbar-title">Shloka Nidhi Admin</div>
+        <div class="topbar-sub">REGISTRATION DASHBOARD</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <div class="main">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="s-label">Total Registrations</div>
+        <div class="s-value" id="statTotal">—</div>
+        <div class="s-sub">all workshops</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Revenue (INR)</div>
+        <div class="s-value revenue-inr" id="statINR">—</div>
+        <div class="s-sub">₹ collected</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Revenue (USD)</div>
+        <div class="s-value revenue-usd" id="statUSD">—</div>
+        <div class="s-sub">$ collected</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Latest Registration</div>
+        <div class="s-value" id="statLatest" style="font-size:14px;padding-top:6px">—</div>
+        <div class="s-sub" id="statLatestTime">—</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <input class="search-box" type="text" id="searchInput" placeholder="🔍  Search by name, email, city..." oninput="renderTable()"/>
+      <select class="filter-select" id="currencyFilter" onchange="renderTable()">
+        <option value="">All currencies</option>
+        <option value="INR">INR only</option>
+        <option value="USD">USD only</option>
+      </select>
+      <button class="refresh-btn" onclick="loadData()" title="Refresh">↻</button>
+      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Child <span id="rowCount" class="count-badge">0</span></th>
+            <th>Age</th>
+            <th>Parent</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Amount</th>
+            <th>Payment ID</th>
+            <th>Registered</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="10">
+            <div class="table-status"><div class="spin"></div></div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://aqninxcxcsowhugbdbmn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_YUV58wq_zeUnIpBxVXTNkg_Ygw3F8Lu';
+  const ADMIN_PASSWORD = 'shlokanidhi2026';  // ← Change this to your own password!
+
+  // ── Auth ────────────────────────────────────────────────────────
+  function doLogin() {
+    const pw = document.getElementById('pwInput').value;
+    if (pw === ADMIN_PASSWORD) {
+      sessionStorage.setItem('sn_admin', '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadData();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwInput').focus();
+    }
+  }
+
+  function doLogout() {
+    sessionStorage.removeItem('sn_admin');
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('loginErr').style.display = 'none';
+  }
+
+  // Auto-login if already authenticated this session
+  if (sessionStorage.getItem('sn_admin') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+  }
+
+  // ── Data ─────────────────────────────────────────────────────────
+  let allData = [];
+
+  async function loadData() {
+    document.getElementById('tableBody').innerHTML =
+      '<tr><td colspan="10"><div class="table-status"><div class="spin"></div></div></td></tr>';
+
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/registrations?select=*&order=created_at.desc`,
+        {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        }
+      );
+      if (!res.ok) throw new Error(await res.text());
+      allData = await res.json();
+      updateStats();
+      renderTable();
+    } catch(e) {
+      document.getElementById('tableBody').innerHTML =
+        `<tr><td colspan="10"><div class="table-status">
+          <div class="icon">⚠️</div>
+          <div>Error loading data: ${e.message}</div>
+        </div></td></tr>`;
+    }
+  }
+
+  function updateStats() {
+    const total = allData.length;
+    const inrRows = allData.filter(r => r.currency === 'INR');
+    const usdRows = allData.filter(r => r.currency === 'USD');
+    const totalINR = inrRows.reduce((s,r) => s + parseFloat(r.amount_paid||0), 0);
+    const totalUSD = usdRows.reduce((s,r) => s + parseFloat(r.amount_paid||0), 0);
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statINR').textContent = '₹' + totalINR.toLocaleString('en-IN');
+    document.getElementById('statUSD').textContent = '$' + totalUSD.toFixed(0);
+
+    if (allData.length > 0) {
+      const latest = allData[0];
+      document.getElementById('statLatest').textContent = latest.child_name;
+      document.getElementById('statLatestTime').textContent = formatDate(latest.created_at);
+    }
+  }
+
+  function renderTable() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const curFilter = document.getElementById('currencyFilter').value;
+
+    let rows = allData.filter(r => {
+      const matchSearch = !search ||
+        (r.child_name||'').toLowerCase().includes(search) ||
+        (r.parent_name||'').toLowerCase().includes(search) ||
+        (r.email||'').toLowerCase().includes(search) ||
+        (r.city||'').toLowerCase().includes(search) ||
+        (r.phone||'').toLowerCase().includes(search);
+      const matchCur = !curFilter || r.currency === curFilter;
+      return matchSearch && matchCur;
+    });
+
+    document.getElementById('rowCount').textContent = rows.length;
+
+    if (rows.length === 0) {
+      document.getElementById('tableBody').innerHTML =
+        `<tr><td colspan="10"><div class="table-status">
+          <div class="icon">🔍</div>
+          <div>${allData.length === 0 ? 'No registrations yet' : 'No results found'}</div>
+        </div></td></tr>`;
+      return;
+    }
+
+    document.getElementById('tableBody').innerHTML = rows.map((r, i) => `
+      <tr>
+        <td style="color:var(--muted);font-size:12px">${i+1}</td>
+        <td><strong style="color:var(--cream)">${esc(r.child_name)}</strong></td>
+        <td style="color:var(--muted)">${esc(r.child_age)}</td>
+        <td>${esc(r.parent_name)}</td>
+        <td style="color:var(--muted)">${esc(r.phone)}</td>
+        <td style="color:var(--muted);font-size:12px">${esc(r.email)}</td>
+        <td style="color:var(--muted)">${esc(r.city)}</td>
+        <td>
+          <span class="${r.currency === 'INR' ? 'badge-inr' : 'badge-usd'}">
+            ${r.currency === 'INR' ? '₹' : '$'}${esc(r.amount_paid)}
+          </span>
+        </td>
+        <td><div class="payment-id" title="${esc(r.payment_id)}">${esc(r.payment_id)}</div></td>
+        <td class="date-cell">${formatDate(r.created_at)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // ── Export CSV ────────────────────────────────────────────────
+  function exportCSV() {
+    const headers = ['#','Child Name','Age','Parent Name','Phone','Email','City','Currency','Amount','Payment ID','Registered'];
+    const rows = allData.map((r,i) => [
+      i+1,
+      r.child_name, r.child_age, r.parent_name,
+      r.phone, r.email, r.city,
+      r.currency, r.amount_paid, r.payment_id,
+      formatDate(r.created_at)
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `shlokanidhi-registrations-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function esc(s) {
+    return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'}) +
+      ' ' + d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  // Auto-load if already logged in
+  if (sessionStorage.getItem('sn_admin') === '1') loadData();
+</script>
+</body>
+</html>
