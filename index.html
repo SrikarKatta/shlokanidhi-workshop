@@ -263,6 +263,8 @@
     amountUSD:      1500,                      // $15  × 100 cents
     workshopName:   'Little Hanumans Workshop',
     whatsappNumber: '14698751127',    // e.g. 919876543210
+    supabaseUrl:    'https://aqninxcxcsowhugbdbmn.supabase.co',
+    supabaseKey:    'sb_publishable_YUV58wq_zeUnIpBxVXTNkg_Ygw3F8Lu',
   };
 
   let currency = 'INR';
@@ -332,12 +334,44 @@
     new Razorpay(options).open();
   }
 
-  function onPaymentSuccess(response, d) {
+  async function saveToSupabase(data) {
+    try {
+      const res = await fetch(`${CONFIG.supabaseUrl}/rest/v1/registrations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': CONFIG.supabaseKey,
+          'Authorization': `Bearer ${CONFIG.supabaseKey}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) console.error('Supabase error', await res.text());
+    } catch(e) { console.error('Supabase save failed', e); }
+  }
+
+  async function onPaymentSuccess(response, d) {
+    // 1. Save to Supabase database
+    await saveToSupabase({
+      child_name:  d.child,
+      child_age:   d.age,
+      parent_name: d.name,
+      phone:       d.phone,
+      email:       d.email,
+      city:        d.city,
+      currency:    currency,
+      amount_paid: currency === 'INR' ? '699' : '15',
+      payment_id:  response.razorpay_payment_id,
+      workshop:    CONFIG.workshopName
+    });
+
+    // 2. Show success screen
     document.getElementById('formSection').style.display = 'none';
     const box = document.getElementById('successBox');
     box.style.display = 'block';
     box.scrollIntoView({behavior:'smooth'});
 
+    // 3. WhatsApp notification to you
     const msg = encodeURIComponent(
       `🙏 New Registration – Little Hanumans Workshop!\n\n`+
       `👦 Child: ${d.child} (${d.age})\n`+
