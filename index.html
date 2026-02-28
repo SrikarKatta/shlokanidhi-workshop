@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Little Hanumans Workshop – Shloka Nidhi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    :root {
+      --saffron: #E8820C;
+      --gold: #F5C842;
+      --deep: #1A0800;
+      --cream: #FDF6E3;
+      --rust: #B34A00;
+      --sand: #F0DEB0;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--deep);
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background:
+        radial-gradient(ellipse 90% 55% at 50% -5%, rgba(232,130,12,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(245,200,66,0.07) 0%, transparent 55%),
+        repeating-linear-gradient(60deg, transparent, transparent 50px, rgba(245,200,66,0.012) 50px, rgba(245,200,66,0.012) 51px);
+      pointer-events:none; z-index:0;
+    }
+    .container { max-width:880px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+    .om-bg { position:fixed; bottom:-80px; right:-80px; font-size:380px; opacity:0.022; pointer-events:none; z-index:0; line-height:1; }
+
+    header { text-align:center; padding:52px 0 28px; }
+    .logo-wrap { display:inline-block; margin-bottom:22px; animation:floatLogo 4s ease-in-out infinite; }
+    @keyframes floatLogo { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+    .logo-wrap img { width:115px; height:115px; border-radius:50%; border:3px solid var(--gold); box-shadow:0 0 40px rgba(245,200,66,0.35),0 0 90px rgba(232,130,12,0.18); }
+    .tagline { font-size:12px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); opacity:.75; margin-bottom:10px; }
+    .badge { display:inline-block; background:linear-gradient(135deg,rgba(232,130,12,0.3),rgba(179,74,0,0.35)); border:1px solid rgba(232,130,12,0.5); border-radius:30px; padding:5px 18px; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+    h1 { font-family:'Cinzel',serif; font-size:clamp(22px,5.5vw,48px); font-weight:900; line-height:1.15; background:linear-gradient(135deg,var(--gold) 0%,#ff9d2e 45%,var(--gold) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px; }
+    .subtitle { font-size:clamp(14px,2.2vw,18px); color:var(--sand); font-style:italic; font-weight:300; opacity:.85; max-width:600px; margin:0 auto; line-height:1.6; }
+
+    .divider { display:flex; align-items:center; gap:14px; margin:28px 0; opacity:.4; }
+    .divider::before,.divider::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--gold)); }
+    .divider::after { background:linear-gradient(to left,transparent,var(--gold)); }
+    .divider span { font-size:18px; }
+
+    .desc-block { background:rgba(245,200,66,0.05); border:1px solid rgba(245,200,66,0.15); border-left:3px solid var(--saffron); border-radius:12px; padding:24px 28px; margin-bottom:28px; line-height:1.85; font-size:17px; color:var(--sand); }
+    .desc-block p { margin-bottom:14px; }
+    .desc-block ul { list-style:none; margin:10px 0 14px 0; }
+    .desc-block ul li { padding:5px 0 5px 26px; position:relative; font-size:16px; }
+    .desc-block ul li::before { content:'🪷'; position:absolute; left:0; font-size:14px; top:6px; }
+    .desc-block .tagline-end { font-family:'Cinzel',serif; font-size:15px; color:var(--gold); font-style:normal; margin-top:6px; }
+
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:32px; }
+    .info-card { background:rgba(245,200,66,0.06); border:1px solid rgba(245,200,66,0.18); border-radius:12px; padding:18px 14px; text-align:center; transition:border-color .3s,background .3s; }
+    .info-card:hover { background:rgba(245,200,66,0.11); border-color:rgba(245,200,66,0.38); }
+    .info-card .icon { font-size:24px; margin-bottom:7px; }
+    .info-card .label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); opacity:.7; margin-bottom:3px; }
+    .info-card .value { font-family:'Cinzel',serif; font-size:13.5px; color:var(--cream); }
+
+    .price-banner { background:linear-gradient(135deg,rgba(232,130,12,0.22),rgba(179,74,0,0.28)); border:1px solid rgba(232,130,12,0.45); border-radius:16px; padding:22px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:36px; }
+    .price-left .label { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); opacity:.7; }
+    .price-display { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:6px; }
+    .price-old { font-family:'Cinzel',serif; font-size:22px; color:rgba(245,200,66,0.38); text-decoration:line-through; }
+    .price-new { font-family:'Cinzel',serif; font-size:40px; font-weight:700; color:var(--gold); line-height:1; }
+    .price-save { background:rgba(232,130,12,0.35); border:1px solid var(--saffron); border-radius:20px; padding:3px 12px; font-size:12px; letter-spacing:1px; color:#ffcf72; align-self:center; }
+    .price-right { font-size:14px; color:var(--sand); opacity:.8; max-width:240px; line-height:1.6; }
+
+    .form-card { background:rgba(255,255,255,0.04); border:1px solid rgba(245,200,66,0.14); border-radius:20px; padding:clamp(22px,5vw,46px); margin-bottom:36px; backdrop-filter:blur(6px); }
+    .form-title { font-family:'Cinzel',serif; font-size:19px; color:var(--gold); margin-bottom:26px; }
+    .currency-toggle { display:flex; gap:10px; margin-bottom:24px; }
+    .currency-btn { flex:1; padding:10px; border-radius:8px; border:1px solid rgba(245,200,66,0.22); background:transparent; color:var(--cream); font-family:'Cormorant Garamond',serif; font-size:15px; cursor:pointer; transition:all .2s; }
+    .currency-btn.active { background:rgba(232,130,12,0.28); border-color:var(--saffron); color:var(--gold); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .form-grid .full { grid-column:1/-1; }
+    @media(max-width:560px){ .form-grid{grid-template-columns:1fr} .form-grid .full{grid-column:1} }
+    .field { display:flex; flex-direction:column; gap:5px; }
+    .field label { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); opacity:.72; }
+    .field input,.field select { background:rgba(255,255,255,0.05); border:1px solid rgba(245,200,66,0.18); border-radius:8px; padding:12px 15px; color:var(--cream); font-family:'Cormorant Garamond',serif; font-size:16px; outline:none; transition:border-color .25s,background .25s; width:100%; }
+    .field input::placeholder { color:rgba(253,246,227,0.28); }
+    .field input:focus,.field select:focus { border-color:var(--gold); background:rgba(245,200,66,0.07); }
+    .field select option { background:#2a1000; color:var(--cream); }
+    .error-msg { color:#ff8a8a; font-size:12px; margin-top:3px; display:none; }
+
+    .submit-btn { width:100%; margin-top:26px; padding:18px; border:none; border-radius:12px; background:linear-gradient(135deg,var(--saffron),var(--rust)); color:#fff; font-family:'Cinzel',serif; font-size:17px; font-weight:600; letter-spacing:2px; cursor:pointer; transition:opacity .2s,transform .15s,box-shadow .2s; box-shadow:0 6px 24px rgba(232,130,12,0.4); position:relative; overflow:hidden; }
+    .submit-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent); transition:left .5s; }
+    .submit-btn:hover::before { left:100%; }
+    .submit-btn:hover { opacity:.92; transform:translateY(-1px); box-shadow:0 10px 32px rgba(232,130,12,.5); }
+    .submit-btn:active { transform:translateY(0); }
+    .submit-btn:disabled { opacity:.48; cursor:not-allowed; transform:none; }
+
+    .success-box { display:none; text-align:center; padding:50px 30px; background:rgba(13,80,40,0.18); border:1px solid rgba(50,180,80,0.3); border-radius:20px; margin-bottom:36px; }
+    .success-box .icon { font-size:60px; margin-bottom:18px; }
+    .success-box h2 { font-family:'Cinzel',serif; font-size:26px; color:var(--gold); margin-bottom:14px; }
+    .success-box p { color:var(--sand); font-size:17px; line-height:1.8; }
+
+    footer { text-align:center; padding:28px 0 44px; border-top:1px solid rgba(245,200,66,0.1); color:var(--sand); opacity:.45; font-size:14px; }
+
+    .fade-up { opacity:0; transform:translateY(22px); animation:fadeUp .7s ease forwards; }
+    .fade-up:nth-child(1){animation-delay:.1s} .fade-up:nth-child(2){animation-delay:.22s} .fade-up:nth-child(3){animation-delay:.38s} .fade-up:nth-child(4){animation-delay:.5s}
+    @keyframes fadeUp { to{opacity:1;transform:translateY(0)} }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:8px; }
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<div class="om-bg">🕉</div>
+<div class="container">
+
+  <header class="fade-up">
+    <div class="logo-wrap">
+      <img src="data:image/png;base64,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" alt="Shloka Nidhi" />
+    </div>
+    <p class="tagline">By Lavanya Anthanna · Shloka Nidhi</p>
+    <div class="badge">🙏 1-Day Live Online Workshop</div>
+    <h1>Little Hanumans:<br>Confidence &amp; Focus Workshop for Kids</h1>
+    <p class="subtitle">Help your child build focus, confidence &amp; cultural grounding — through the power of Hanuman Chalisa</p>
+  </header>
+
+  <div class="divider fade-up"><span>🕉</span></div>
+
+  <!-- Description -->
+  <div class="desc-block fade-up">
+    <p>Help your child build <strong style="color:var(--gold)">focus, confidence, memory power, and cultural grounding</strong> — all through one powerful shloka from the Hanuman Chalisa.</p>
+    <p>In this engaging <strong style="color:var(--gold)">1-hour live workshop</strong>, children will:</p>
+    <ul>
+      <li>Learn with rhythm, actions, and storytelling</li>
+      <li>Understand the meaning in a simple, joyful way</li>
+      <li>Experience the confidence of chanting independently</li>
+      <li>Discover how ancient wisdom builds modern strength</li>
+    </ul>
+    <p class="tagline-end">✨ This is not memorization. This is transformation through tradition.</p>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="info-grid fade-up">
+    <div class="info-card">
+      <div class="icon">📅</div>
+      <div class="label">Workshop Date</div>
+      <div class="value">March 13, 2026</div>
+    </div>
+    <div class="info-card">
+      <div class="icon">🕗</div>
+      <div class="label">Time</div>
+      <div class="value">9:00 AM CST<br><small style="font-size:11px;opacity:.7">7:30 PM IST</small></div>
+    </div>
+    <div class="info-card">
+      <div class="icon">👦</div>
+      <div class="label">Age Group</div>
+      <div class="value">5 – 10 Years</div>
+    </div>
+    <div class="info-card">
+      <div class="icon">⏱️</div>
+      <div class="label">Duration</div>
+      <div class="value">1 Hour · Live Zoom</div>
+    </div>
+    <div class="info-card">
+      <div class="icon">📋</div>
+      <div class="label">Registration Closes</div>
+      <div class="value">March 12, 2026</div>
+    </div>
+    <div class="info-card">
+      <div class="icon">🎓</div>
+      <div class="label">Taught By</div>
+      <div class="value">Lavanya Anthanna</div>
+    </div>
+  </div>
+
+  <!-- Price Banner -->
+  <div class="price-banner fade-up">
+    <div class="price-left">
+      <div class="label">Special Launch Price</div>
+      <div class="price-display">
+        <span class="price-old" id="oldPrice">₹999</span>
+        <span class="price-new" id="newPrice">₹699</span>
+        <span class="price-save" id="saveBadge">Save ₹300</span>
+      </div>
+    </div>
+    <div class="price-right">
+      Limited seats. Zoom link sent within 24 hrs of payment. 🪷
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card fade-up" id="formSection">
+    <div class="form-title">🪷 Register Your Child</div>
+
+    <div class="currency-toggle">
+      <button class="currency-btn active" id="btnINR" onclick="setCurrency('INR')">🇮🇳 Pay in ₹ INR</button>
+      <button class="currency-btn" id="btnUSD" onclick="setCurrency('USD')">🌍 Pay in $ USD</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>Child's Full Name *</label>
+        <input type="text" id="childName" placeholder="e.g. Arjun Sharma" />
+        <span class="error-msg" id="err-childName">Please enter child's name</span>
+      </div>
+      <div class="field">
+        <label>Child's Age *</label>
+        <select id="childAge">
+          <option value="">Select age</option>
+          <option>5 years</option><option>6 years</option><option>7 years</option>
+          <option>8 years</option><option>9 years</option><option>10 years</option>
+        </select>
+        <span class="error-msg" id="err-childAge">Please select age</span>
+      </div>
+      <div class="field">
+        <label>Parent's Full Name *</label>
+        <input type="text" id="parentName" placeholder="e.g. Priya Sharma" />
+        <span class="error-msg" id="err-parentName">Please enter your name</span>
+      </div>
+      <div class="field">
+        <label>WhatsApp / Phone *</label>
+        <input type="tel" id="phone" placeholder="+91 98765 43210" />
+        <span class="error-msg" id="err-phone">Please enter phone number</span>
+      </div>
+      <div class="field full">
+        <label>Parent's Email *</label>
+        <input type="email" id="email" placeholder="priya@example.com" />
+        <span class="error-msg" id="err-email">Please enter a valid email</span>
+      </div>
+      <div class="field full">
+        <label>City / Country *</label>
+        <input type="text" id="city" placeholder="e.g. Bangalore, India" />
+        <span class="error-msg" id="err-city">Please enter your city</span>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="payBtn" onclick="initiatePayment()">
+      🙏 Register &amp; Pay Now
+    </button>
+  </div>
+
+  <!-- Success -->
+  <div class="success-box" id="successBox">
+    <div class="icon">🙏</div>
+    <h2>Jai Hanuman! Registration Confirmed!</h2>
+    <p>
+      Your little one is registered for the <strong>Little Hanumans Workshop</strong>!<br><br>
+      The Zoom link will be sent to your email and WhatsApp within 24 hours.<br><br>
+      <em>March 13, 2026 · 9:00 AM CST (7:30 PM IST)</em><br><br>
+      <strong>Om Shri Hanumate Namah 🕉️</strong>
+    </p>
+  </div>
+
+  <footer>
+    <p>© 2026 Shloka Nidhi · By Lavanya Anthanna</p>
+    <p style="margin-top:8px;font-size:12px">Questions? WhatsApp: <strong>YOUR_WHATSAPP_NUMBER</strong></p>
+  </footer>
+</div>
+
+<script>
+  const CONFIG = {
+    razorpayKeyId:  'YOUR_RAZORPAY_KEY_ID',   // ← Replace with your live key
+    amountINR:      69900,                     // ₹699 × 100 paise
+    amountUSD:      1500,                      // $15  × 100 cents
+    workshopName:   'Little Hanumans Workshop',
+    whatsappNumber: 'YOUR_WHATSAPP_NUMBER',    // e.g. 919876543210
+  };
+
+  let currency = 'INR';
+
+  function setCurrency(cur) {
+    currency = cur;
+    document.getElementById('btnINR').classList.toggle('active', cur === 'INR');
+    document.getElementById('btnUSD').classList.toggle('active', cur === 'USD');
+    if (cur === 'INR') {
+      document.getElementById('oldPrice').textContent = '₹999';
+      document.getElementById('newPrice').textContent = '₹699';
+      document.getElementById('saveBadge').textContent = 'Save ₹300';
+    } else {
+      document.getElementById('oldPrice').textContent = '$20';
+      document.getElementById('newPrice').textContent = '$15';
+      document.getElementById('saveBadge').textContent = 'Save $5';
+    }
+  }
+
+  function validate() {
+    const fields = [
+      {id:'childName', errId:'err-childName', check: v=>v.trim().length>1},
+      {id:'childAge',  errId:'err-childAge',  check: v=>v!==''},
+      {id:'parentName',errId:'err-parentName',check: v=>v.trim().length>1},
+      {id:'phone',     errId:'err-phone',     check: v=>v.trim().length>5},
+      {id:'email',     errId:'err-email',     check: v=>/\S+@\S+\.\S+/.test(v)},
+      {id:'city',      errId:'err-city',      check: v=>v.trim().length>1},
+    ];
+    let ok = true;
+    fields.forEach(f=>{
+      const val = document.getElementById(f.id).value;
+      const err = document.getElementById(f.errId);
+      const pass = f.check(val);
+      err.style.display = pass ? 'none' : 'block';
+      if (!pass) ok = false;
+    });
+    return ok;
+  }
+
+  function initiatePayment() {
+    if (!validate()) return;
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Opening Payment...';
+
+    const amount = currency === 'INR' ? CONFIG.amountINR : CONFIG.amountUSD;
+    const name   = document.getElementById('parentName').value.trim();
+    const email  = document.getElementById('email').value.trim();
+    const phone  = document.getElementById('phone').value.trim();
+    const child  = document.getElementById('childName').value.trim();
+    const age    = document.getElementById('childAge').value;
+    const city   = document.getElementById('city').value.trim();
+
+    const options = {
+      key:         CONFIG.razorpayKeyId,
+      amount:      amount,
+      currency:    currency,
+      name:        CONFIG.workshopName,
+      description: `Registration: ${child} (${age})`,
+      prefill:     {name, email, contact: phone},
+      notes:       {child_name:child, child_age:age, city, workshop:CONFIG.workshopName},
+      theme:       {color:'#E8820C'},
+      handler: function(response) { onPaymentSuccess(response, {name,email,phone,child,age,city}); },
+      modal: { ondismiss: function(){ btn.disabled=false; btn.innerHTML='🙏 Register &amp; Pay Now'; } }
+    };
+
+    new Razorpay(options).open();
+  }
+
+  function onPaymentSuccess(response, d) {
+    document.getElementById('formSection').style.display = 'none';
+    const box = document.getElementById('successBox');
+    box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth'});
+
+    const msg = encodeURIComponent(
+      `🙏 New Registration – Little Hanumans Workshop!\n\n`+
+      `👦 Child: ${d.child} (${d.age})\n`+
+      `👨‍👩‍👦 Parent: ${d.name}\n`+
+      `📱 Phone: ${d.phone}\n`+
+      `📧 Email: ${d.email}\n`+
+      `🌍 City: ${d.city}\n`+
+      `💳 Payment ID: ${response.razorpay_payment_id}`
+    );
+    setTimeout(()=>{ window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`,'_blank'); }, 1500);
+  }
+</script>
+</body>
+</html>
